@@ -1,0 +1,4 @@
+.streamlit/secrets.toml
+comprovantes/
+*.pyc
+__pycache__/

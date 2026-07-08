@@ -94,13 +94,16 @@ def get_token():
     return ''.join(c for c in t if ord(c) < 128).strip()
 
 def carregar():
-    headers = {"Authorization": f"token {get_token()}"}
-    url = f"https://api.github.com/repos/{REPO}/contents/{DATA_FILE}"
-    r = requests.get(url, headers=headers)
+    # Leitura via URL pública — repositório público, sem token necessário
+    raw_url = f"https://raw.githubusercontent.com/{REPO}/main/{DATA_FILE}"
+    r = requests.get(raw_url, timeout=10)
     if r.status_code == 200:
-        content = r.json()
-        data = json.loads(base64.b64decode(content["content"]).decode())
-        st.session_state["sha"] = content["sha"]
+        data = r.json()
+        # Busca o sha via API para poder salvar depois
+        api_url = f"https://api.github.com/repos/{REPO}/contents/{DATA_FILE}"
+        r2 = requests.get(api_url, timeout=10)
+        if r2.status_code == 200:
+            st.session_state["sha"] = r2.json()["sha"]
         return data
     st.session_state["sha"] = None
     return []

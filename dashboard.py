@@ -673,8 +673,7 @@ with tab3:
 
     # Calculadora
     with st.expander("🧮 Calculadora"):
-        import streamlit.components.v1 as components
-        components.html("""
+        st.html("""
 <style>
   body { margin:0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
   .calc { background:#1e293b; border-radius:16px; padding:16px; max-width:280px; margin:0 auto; }
@@ -753,7 +752,7 @@ with tab3:
     cur=String(r); pendOp=''; fresh=true; show();
   }
 </script>
-""", height=380)
+""")
 
     # Filtros
     f1, f2, f3, f4 = st.columns([1.4, 1, 1, 1.4])

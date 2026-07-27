@@ -16,20 +16,20 @@ transferencia de estoque, emprestimos, acertos por Pix).
 
 ```
 github_token = "<base64 do token ghp_...>"
-painel_senha = "brunavini2026"
 ```
 
 O token **tem que ser em base64** — a caixa de Secrets do Streamlit Cloud corrompe
 token colado em texto puro (so os ~8 primeiros caracteres sobrevivem). `get_token()`
 aceita os dois formatos. Mesmo problema documentado no painel da funcionaria.
 
-## Senha do painel
+## Senha do painel — DESLIGADA (escolha da Bruna, 27/07/2026)
 
-O app e **publico** no Streamlit Cloud (o link abre pra qualquer um, sem pedir login
-do Streamlit) mas pede a senha do secret `painel_senha` antes de mostrar qualquer coisa.
+O app abre **sem senha**: e publico no Streamlit Cloud e quem tiver o link entra direto.
+A Bruna decidiu assim depois de eu explicar o risco — e como o repositorio tambem e
+publico, os dados ja estavam abertos de qualquer jeito; a senha nao mudaria isso.
 
-Se o secret `painel_senha` nao existir, o app **trava** com "Senha ainda nao configurada"
-em vez de abrir com o campo vazio — de proposito: melhor fechado do que aberto pra todo mundo.
+A tela de senha continua no codigo, so desligada: **basta criar o secret `painel_senha`**
+com a senha desejada que ela volta a aparecer. Sem o secret, o app abre direto.
 
 ## 🚨 Token exposto (27/07/2026) — nao repetir
 

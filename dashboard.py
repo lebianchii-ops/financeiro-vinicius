@@ -12,35 +12,32 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ── Senha de acesso ─────────────────────────────────────────────────
-# O app fica publico no Streamlit Cloud (o link abre pra qualquer um, sem pedir
-# login do Streamlit), mas so entra quem souber a senha do secret `painel_senha`.
+# ── Senha de acesso (opcional) ──────────────────────────────────────
+# Escolha da Bruna em 27/07/2026: o painel abre SEM senha. O link e publico,
+# entao quem tiver o endereco entra direto.
+# Pra voltar a pedir senha depois, basta criar o secret `painel_senha` com a
+# senha desejada (Streamlit Cloud > Settings > Secrets) — nada no codigo muda.
 def _senha_configurada():
     try:
         return str(st.secrets.get("painel_senha", "")).strip()
     except Exception:
         return ""
 
-if not st.session_state.get("autenticado"):
+_certa = _senha_configurada()
+if _certa and not st.session_state.get("autenticado"):
     st.markdown(
         "<h2 style='text-align:center;margin-top:12%'>💰 Financeiro — Bruna & Vinicius</h2>",
         unsafe_allow_html=True,
     )
-    _certa = _senha_configurada()
     _, _meio, _ = st.columns([1, 1, 1])
     with _meio:
-        if not _certa:
-            # sem senha no secrets o painel ficaria aberto pra qualquer um —
-            # melhor travar tudo do que deixar entrar com o campo vazio
-            st.error("Senha ainda nao configurada (secret `painel_senha`).")
-        else:
-            _senha = st.text_input("Senha de acesso", type="password", key="senha_input")
-            if st.button("Entrar", use_container_width=True, type="primary"):
-                if _senha and _senha == _certa:
-                    st.session_state["autenticado"] = True
-                    st.rerun()
-                else:
-                    st.error("Senha incorreta.")
+        _senha = st.text_input("Senha de acesso", type="password", key="senha_input")
+        if st.button("Entrar", use_container_width=True, type="primary"):
+            if _senha and _senha == _certa:
+                st.session_state["autenticado"] = True
+                st.rerun()
+            else:
+                st.error("Senha incorreta.")
     st.stop()
 
 st.markdown("""

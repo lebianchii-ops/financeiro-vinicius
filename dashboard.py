@@ -12,6 +12,37 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# ── Senha de acesso ─────────────────────────────────────────────────
+# O app fica publico no Streamlit Cloud (o link abre pra qualquer um, sem pedir
+# login do Streamlit), mas so entra quem souber a senha do secret `painel_senha`.
+def _senha_configurada():
+    try:
+        return str(st.secrets.get("painel_senha", "")).strip()
+    except Exception:
+        return ""
+
+if not st.session_state.get("autenticado"):
+    st.markdown(
+        "<h2 style='text-align:center;margin-top:12%'>💰 Financeiro — Bruna & Vinicius</h2>",
+        unsafe_allow_html=True,
+    )
+    _certa = _senha_configurada()
+    _, _meio, _ = st.columns([1, 1, 1])
+    with _meio:
+        if not _certa:
+            # sem senha no secrets o painel ficaria aberto pra qualquer um —
+            # melhor travar tudo do que deixar entrar com o campo vazio
+            st.error("Senha ainda nao configurada (secret `painel_senha`).")
+        else:
+            _senha = st.text_input("Senha de acesso", type="password", key="senha_input")
+            if st.button("Entrar", use_container_width=True, type="primary"):
+                if _senha and _senha == _certa:
+                    st.session_state["autenticado"] = True
+                    st.rerun()
+                else:
+                    st.error("Senha incorreta.")
+    st.stop()
+
 st.markdown("""
 <style>
 .block-container { padding-top: 1.2rem !important; max-width: 1200px; }
@@ -90,44 +121,74 @@ STATUS_COR = {"Pendente": "#f59e0b", "Confirmado": "#22c55e", "Cancelado": "#94a
 
 # ── GitHub helpers ──────────────────────────────────────────────────
 def get_token():
+    """Token do GitHub — vem SO do secrets, nunca escrito aqui no codigo.
+
+    O token e guardado em base64 porque a caixa de Secrets do Streamlit Cloud
+    corrompe token colado em texto puro (so os ~8 primeiros caracteres
+    sobrevivem). `get_token()` aceita os dois formatos.
+    """
     try:
-        t = st.secrets["github_token"]
+        t = str(st.secrets["github_token"])
     except Exception:
-        t = "ghp_2grvYh88u6TN18" + "QO9t0zWjuqc4wvNN0No730"
-    return ''.join(c for c in t if ord(c) < 128).strip()
+        st.error("❌ Falta o secret `github_token` nas configuracoes do app.")
+        st.stop()
+    t = ''.join(c for c in t if ord(c) < 128).strip()
+    if t.startswith("ghp_") or t.startswith("github_pat_"):
+        return t
+    try:
+        return base64.b64decode(t).decode("ascii").strip()
+    except Exception:
+        return t
+
+def _headers():
+    return {"Authorization": f"token {get_token()}"}
 
 def carregar():
-    # Leitura via URL pública — repositório público, sem token necessário
-    raw_url = f"https://raw.githubusercontent.com/{REPO}/main/{DATA_FILE}"
-    r = requests.get(raw_url, timeout=10)
+    # Leitura pela API com token — funciona com o repositorio publico OU privado
+    # (a leitura por raw.githubusercontent so funcionava enquanto ele fosse publico)
+    url = f"https://api.github.com/repos/{REPO}/contents/{DATA_FILE}"
+    try:
+        r = requests.get(url, headers=_headers(), timeout=20)
+    except Exception:
+        st.error("❌ Sem conexao com o GitHub. Recarregue a pagina.")
+        st.stop()
     if r.status_code == 200:
-        data = r.json()
-        # Busca o sha via API para poder salvar depois
-        api_url = f"https://api.github.com/repos/{REPO}/contents/{DATA_FILE}"
-        r2 = requests.get(api_url, timeout=10)
-        if r2.status_code == 200:
-            st.session_state["sha"] = r2.json()["sha"]
-        return data
+        info = r.json()
+        st.session_state["sha"] = info["sha"]
+        return json.loads(base64.b64decode(info["content"]).decode())
     st.session_state["sha"] = None
     return []
 
 def salvar(dados):
-    headers = {"Authorization": f"token {get_token()}"}
     url = f"https://api.github.com/repos/{REPO}/contents/{DATA_FILE}"
-    content = base64.b64encode(
-        json.dumps(dados, ensure_ascii=False, indent=2).encode()
-    ).decode()
+
+    # Busca o SHA atual ANTES de gravar — se a Bruna e o Vinicius mexerem quase
+    # ao mesmo tempo, o SHA guardado na sessao fica velho e o GitHub recusa
+    sha = st.session_state.get("sha")
+    try:
+        r_get = requests.get(url, headers=_headers(), timeout=20)
+        if r_get.status_code == 200:
+            sha = r_get.json()["sha"]
+    except Exception:
+        pass
+
     payload = {
         "message": f"update {datetime.now().strftime('%d/%m %H:%M')}",
-        "content": content,
+        "content": base64.b64encode(
+            json.dumps(dados, ensure_ascii=False, indent=2).encode()
+        ).decode(),
     }
-    sha = st.session_state.get("sha")
     if sha:
         payload["sha"] = sha
-    r = requests.put(url, headers=headers, json=payload)
+    try:
+        r = requests.put(url, headers=_headers(), json=payload, timeout=60)
+    except Exception:
+        st.error("❌ Sem conexao ao salvar. Tente de novo.")
+        return False
     if r.status_code in [200, 201]:
         st.session_state["sha"] = r.json()["content"]["sha"]
         return True
+    st.error(f"❌ Nao consegui salvar (codigo {r.status_code}). Recarregue a pagina e tente de novo.")
     return False
 
 # ── Helpers ─────────────────────────────────────────────────────────
@@ -666,7 +727,8 @@ with tab3:
                             })
                             break
                     st.session_state["lancamentos"] = lancamentos
-                    salvar(lancamentos)
+                    if not salvar(lancamentos):
+                        st.stop()
                     st.session_state.editando_id = None
                     st.rerun()
                 if cancelar:
@@ -914,7 +976,8 @@ with tab3:
                                     lancamentos[i]["obs"]    = nova_obs_inline.strip()
                                     break
                             st.session_state["lancamentos"] = lancamentos
-                            salvar(lancamentos)
+                            if not salvar(lancamentos):
+                                st.stop()
                             st.session_state.status_id = None
                             st.rerun()
                         if st.button("✖ Fechar", key=f"cl_st_{l['id']}", use_container_width=True):
@@ -929,7 +992,8 @@ with tab3:
                     if st.button("✅ Confirmar", key=f"conf_{l['id']}"):
                         lancamentos = [x for x in lancamentos if x["id"] != l["id"]]
                         st.session_state["lancamentos"] = lancamentos
-                        salvar(lancamentos)
+                        if not salvar(lancamentos):
+                            st.stop()
                         st.session_state.confirmar_delete = None
                         st.rerun()
                 with cd2:

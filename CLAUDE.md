@@ -5,7 +5,11 @@ transferencia de estoque, emprestimos, acertos por Pix).
 
 - **Pasta local:** `C:\Users\brubi\B.Bianchi\Dashboard Financeiro`
 - **Repo:** `lebianchii-ops/financeiro-vinicius`
-- **App:** `financeiro-vinicius-3etyrkwsf9rzoaxvwmb22a.streamlit.app`
+- **App:** **https://financeiro-bruna-vini.streamlit.app** (subdominio curto, definido em
+  27/07/2026). O endereco antigo `financeiro-vinicius-3etyrkwsf9rzoaxvwmb22a.streamlit.app`
+  ainda responde, mas e o aleatorio que o Streamlit gera — dificil de digitar no celular,
+  foi ele que deu "Safari nao conecta ao servidor" (uma letra errada e o dominio nao existe).
+  Sempre passar o curto.
 - **Rodar local:** `rodar_dashboard.bat`
 - **Dados:** `lancamentos.json` **no proprio repo**, lidos e gravados pela GitHub
   Contents API (`carregar()` / `salvar()` em `dashboard.py`) — igual ao painel da

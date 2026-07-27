@@ -47,13 +47,15 @@ da conta. Removido do codigo em 27/07/2026; o token antigo tem que ser **revogad
 **Regra:** token nunca entra no codigo — so em `st.secrets`. Se o secret faltar, o app
 avisa e para, em vez de cair num token embutido.
 
-## ⚠️ O repositorio e PUBLICO
+## O repositorio e PUBLICO — decisao da Bruna (27/07/2026)
 
-`lancamentos.json` (os acertos de conta de voces dois) esta legivel por qualquer um em
-github.com/lebianchii-ops/financeiro-vinicius. A senha protege o **app**, nao o
-repositorio. Deixar o repo privado resolve — o codigo ja le pela API com token, entao
-funciona igual depois de privado; so e preciso dar ao Streamlit Cloud a permissao de
-ler repositorios privados.
+`lancamentos.json` (os acertos de conta dos dois) esta legivel por qualquer um em
+github.com/lebianchii-ops/financeiro-vinicius. Expliquei o alcance disso e a Bruna
+decidiu **manter publico**. Nao levantar de novo — ja foi perguntado e respondido.
+
+Se um dia ela mudar de ideia: o codigo ja le pela API com token, entao funciona igual
+com o repo privado; so e preciso dar ao Streamlit Cloud a permissao de ler repositorios
+privados.
 
 ## Correcoes de 27/07/2026
 

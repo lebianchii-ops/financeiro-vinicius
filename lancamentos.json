@@ -1,5 +1,27 @@
 [
   {
+    "id": "f464e2be",
+    "data": "2026-07-29",
+    "tipo": "Gasto Empresarial",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Carreto p/ ivete",
+    "fornecedor": "",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 160.0,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 80.0,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 160.0,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-07-29T09:18:45.259773"
+  },
+  {
     "id": "72ff2adb",
     "data": "2026-07-03",
     "tipo": "Compra Mercadoria",

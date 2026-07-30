@@ -765,25 +765,25 @@ with tab3:
   <div class="sub" id="sub"></div>
   <div class="display" id="disp">0</div>
   <div class="grid">
-    <button class="cl" onclick="ce()">C</button>
-    <button onclick="sign()">+/−</button>
-    <button onclick="pct()">%</button>
-    <button class="op" onclick="op('/')">÷</button>
-    <button onclick="num('7')">7</button>
-    <button onclick="num('8')">8</button>
-    <button onclick="num('9')">9</button>
-    <button class="op" onclick="op('*')">×</button>
-    <button onclick="num('4')">4</button>
-    <button onclick="num('5')">5</button>
-    <button onclick="num('6')">6</button>
-    <button class="op" onclick="op('-')">−</button>
-    <button onclick="num('1')">1</button>
-    <button onclick="num('2')">2</button>
-    <button onclick="num('3')">3</button>
-    <button class="op" onclick="op('+')">+</button>
-    <button class="zero" onclick="num('0')">0</button>
-    <button onclick="dot()">.</button>
-    <button class="eq" onclick="eq()">=</button>
+    <button class="cl" data-act="ce">C</button>
+    <button data-act="sign">+/−</button>
+    <button data-act="pct">%</button>
+    <button class="op" data-act="op" data-arg="/">÷</button>
+    <button data-act="num" data-arg="7">7</button>
+    <button data-act="num" data-arg="8">8</button>
+    <button data-act="num" data-arg="9">9</button>
+    <button class="op" data-act="op" data-arg="*">×</button>
+    <button data-act="num" data-arg="4">4</button>
+    <button data-act="num" data-arg="5">5</button>
+    <button data-act="num" data-arg="6">6</button>
+    <button class="op" data-act="op" data-arg="-">−</button>
+    <button data-act="num" data-arg="1">1</button>
+    <button data-act="num" data-arg="2">2</button>
+    <button data-act="num" data-arg="3">3</button>
+    <button class="op" data-act="op" data-arg="+">+</button>
+    <button class="zero" data-act="num" data-arg="0">0</button>
+    <button data-act="dot">.</button>
+    <button class="eq" data-act="eq">=</button>
   </div>
 </div>
 <script>
@@ -813,8 +813,37 @@ with tab3:
     S.textContent=fmt(prev)+' '+pendOp+' '+fmt(cur)+' =';
     cur=String(r); pendOp=''; fresh=true; show();
   }
+  document.addEventListener('keydown', function(e){
+    const k = e.key;
+    if(k>='0' && k<='9'){ num(k); e.preventDefault(); }
+    else if(k==='.' || k===','){ dot(); e.preventDefault(); }
+    else if(k==='+'){ op('+'); e.preventDefault(); }
+    else if(k==='-'){ op('-'); e.preventDefault(); }
+    else if(k==='*'){ op('*'); e.preventDefault(); }
+    else if(k==='/'){ op('/'); e.preventDefault(); }
+    else if(k==='Enter' || k==='='){ eq(); e.preventDefault(); }
+    else if(k==='Escape' || k==='Delete'){ ce(); e.preventDefault(); }
+    else if(k==='Backspace'){
+      cur = cur.length>1 ? cur.slice(0,-1) : '0';
+      show(); e.preventDefault();
+    }
+    else if(k==='%'){ pct(); e.preventDefault(); }
+  });
+  document.querySelectorAll('.calc button[data-act]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const act = btn.getAttribute('data-act');
+      const arg = btn.getAttribute('data-arg');
+      if(act==='num') num(arg);
+      else if(act==='op') op(arg);
+      else if(act==='ce') ce();
+      else if(act==='sign') sign();
+      else if(act==='pct') pct();
+      else if(act==='dot') dot();
+      else if(act==='eq') eq();
+    });
+  });
 </script>
-""")
+""", unsafe_allow_javascript=True)
 
     # Filtros
     f1, f2, f3, f4 = st.columns([1.4, 1, 1, 1.4])
@@ -838,10 +867,26 @@ with tab3:
         d0, d1 = str(filtro_data[0]), str(filtro_data[1])
         dados_filtrados = [l for l in dados_filtrados if d0 <= l["data"] <= d1]
 
+    total_filtrado = sum(l["valor_total"] for l in dados_filtrados)
+    impacto_filtrado = 0.0
+    for l in dados_filtrados:
+        vl = l.get("valor_liquido", 0.0)
+        if l["tipo"] == "Acerto (Pix / Desconto)":
+            impacto_filtrado += -vl if l["quem_arcou"] == "Vinicius" else vl
+        else:
+            impacto_filtrado += vl
+
     hh1, hh2 = st.columns([5, 1])
     with hh1:
-        st.markdown(f"<div style='color:#64748b;font-size:0.85rem;padding:4px 0'>{len(dados_filtrados)} lançamento(s)</div>",
-                    unsafe_allow_html=True)
+        cor_imp_f = "#16a34a" if impacto_filtrado >= 0 else "#dc2626"
+        sinal_f   = "+" if impacto_filtrado >= 0 else "−"
+        st.markdown(
+            f"<div style='color:#64748b;font-size:0.85rem;padding:4px 0'>"
+            f"{len(dados_filtrados)} lançamento(s) &nbsp;·&nbsp; "
+            f"Total: <b style='color:#1e293b'>{brl(total_filtrado)}</b> &nbsp;·&nbsp; "
+            f"Impacto no saldo: <b style='color:{cor_imp_f}'>{sinal_f} {brl(abs(impacto_filtrado))}</b>"
+            f"</div>",
+            unsafe_allow_html=True)
     with hh2:
         if dados_filtrados:
             df_exp = pd.DataFrame([{

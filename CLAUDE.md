@@ -68,5 +68,24 @@ privados.
   resultado e davam `st.rerun()` logo depois — a edicao parecia ter salvado mesmo
   quando falhava. Agora param no erro.
 
+## Correcoes de 30/07/2026
+
+- **Aba Historico** — cada combinacao de filtro (Tipo/Quem/Status/Periodo) agora mostra
+  o total somado e o impacto no saldo dos lancamentos filtrados, ao lado da contagem
+  ("9 lancamento(s) · Total: R$ X · Impacto no saldo: +R$ Y").
+- **Calculadora estava 100% quebrada (clique E teclado) — corrigido.** Causa raiz:
+  `st.html()` ignora `<script>` e atributos `onclick` por padrao (precisa do parametro
+  `unsafe_allow_javascript=True`, que nao estava sendo passado). Mesmo com esse parametro,
+  o sanitizador (DOMPurify) continua removendo atributos `onclick` inline — a correcao
+  definitiva foi trocar `onclick="..."` por `data-act`/`data-arg` + `addEventListener`
+  no JS, que sobrevive a sanitizacao. Tambem foi adicionado suporte a digitar pelo
+  teclado (numeros, `+ - * /`, Enter/`=`, Backspace, Escape/Delete, `%`) via
+  `document.addEventListener('keydown', ...)`. Testado com cliques reais de mouse
+  (7×6=42) e teclas reais simuladas via DOM (7+5=12) — funcionando.
+- **Regra para qualquer `st.html()` com JS neste projeto (ou outros com calculadora/widget
+  custom em HTML):** sempre passar `unsafe_allow_javascript=True` E nunca usar `onclick=`
+  inline — usar `data-*` + `addEventListener`, senao o clique fica mudo mesmo com o
+  parametro certo.
+
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

@@ -1,5 +1,27 @@
 [
   {
+    "id": "eddfbe7f",
+    "data": "2026-08-07",
+    "tipo": "Compra Mercadoria",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "TESTE AUTOMATIZADO - APAGAR",
+    "fornecedor": "",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 1.0,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 0.5,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 1.0,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-08-07T17:07:31.596048"
+  },
+  {
     "id": "f464e2be",
     "data": "2026-07-29",
     "tipo": "Gasto Empresarial",

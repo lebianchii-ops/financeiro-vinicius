@@ -148,6 +148,20 @@ privados.
   — o teste automatizado da sessao anterior nao pegou isso (rodava numa aba de fundo que
   nao executa o script do Streamlit de jeito nenhum, entao "num undefined" parecia normal
   e mascarou o bug real introduzido pelo proprio fix).
+- **Nova aba "❓ Ajuda" (tab4) no proprio app:** guia pratico campo-por-campo (Data,
+  Tipo, Quem pagou, Categoria, Divisao etc), o que cada um dos 6 Tipos significa, e o
+  passo a passo de como a conta e feita — com exemplo real (o lancamento "Carreto p/
+  ivete", R$160 Meio a Meio pago pela Bruna → Vinicius deve R$80). Criada porque a
+  Bruna perguntou se um valor "nao estava sem dividir por 2" (nao estava — R$80 ja e
+  metade de R$160, so nao ficava obvio olhando o card). Fica dentro do app pra o
+  Vinicius tambem ver, nao so a Bruna. Documenta tambem um comportamento real que
+  vale saber: o saldo total soma TUDO, inclusive lancamento marcado como Cancelado —
+  só o Excluir tira de vez.
+  **Pegadinha do Streamlit encontrada ao escrever isso:** `st.markdown()` trata `$...$`
+  como formula LaTeX — qualquer "R$" dentro de `st.markdown()` sem escapar vira texto
+  sumido silenciosamente (ex: "R$ 160,00" virava "R 160,00"). **Regra: todo "R$" dentro
+  de `st.markdown()` neste projeto tem que ser escrito `R\$`**, e a string precisa ser
+  raw (`st.markdown(r"""..."""`) pra o Python não reclamar do escape invalido.
 
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

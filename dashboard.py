@@ -319,7 +319,7 @@ with hc2:
         st.session_state["dados_carregados"] = False
         st.rerun()
 
-tab1, tab2, tab3 = st.tabs(["📊  Visão Geral", "➕  Lançar", "📋  Histórico"])
+tab1, tab2, tab3, tab4 = st.tabs(["📊  Visão Geral", "➕  Lançar", "📋  Histórico", "❓  Ajuda"])
 
 # ════════════════════════════════════════════════════════
 # TAB 1 — VISÃO GERAL
@@ -1067,3 +1067,127 @@ with tab3:
                         st.rerun()
 
             st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════
+# TAB 4 — AJUDA
+# ════════════════════════════════════════════════════════
+with tab4:
+    st.markdown("### ❓ Como funciona esse app")
+    st.caption("Guia rápido pra quem usa o app — Bruna e Vinicius.")
+
+    with st.expander("📊 As 3 abas + essa aqui", expanded=True):
+        st.markdown("""
+- **📊 Visão Geral** — o resumo: quanto o Vinicius deve pra Bruna (ou o contrário), separado por Confirmado/Pendente, últimas transações e um gráfico da evolução do saldo.
+- **➕ Lançar** — onde se registra um gasto, transferência, empréstimo ou acerto novo.
+- **📋 Histórico** — lista de tudo que já foi lançado. Dá pra filtrar, editar, mudar o status ou excluir um lançamento aqui. Tem também a calculadora.
+- **❓ Ajuda** — essa aba, com a explicação de tudo.
+        """)
+
+    with st.expander("📝 Campo por campo (aba Lançar)"):
+        st.markdown("""
+| Campo | O que é |
+|---|---|
+| **Data** | Quando o gasto/transferência aconteceu (não precisa ser hoje). |
+| **Tipo** | Categoria do lançamento — ver explicação de cada uma abaixo. |
+| **Quem pagou / transferiu / emprestou** | Quem tirou o dinheiro do bolso (ou mandou o estoque) dessa vez: Bruna ou Vinicius. **Esse campo é a base de toda a conta** — ver "Como a conta é feita" abaixo. |
+| **Categoria** (💼 Empresarial / 🏠 Pessoal) | Só uma etiqueta pra organizar/separar visualmente. Não entra na conta do saldo. |
+| **Descrição** | Nome curto do que foi (ex: "Carreto p/ ivete"). |
+| **Fornecedor / Pessoa** | De quem foi comprado ou pago (opcional). |
+| **Referência** | Nº de nota, pedido, etc — só anotação (opcional). |
+| **Comprovante** | Anexar PDF ou foto do comprovante (opcional, fica salvo e dá pra baixar depois no Histórico). |
+| **Observação** | Qualquer nota extra (opcional). |
+| **Quantidade × Valor unitário** | O sistema multiplica os dois pra calcular o **Valor total** sozinho, na hora — não precisa fazer conta na mão. Se for só 1 item, pode deixar Quantidade = 1 e digitar o valor total direto no Valor unitário. |
+| **SKU do produto** | Só aparece quando o Tipo é "Transferência Estoque" — pra identificar o produto que mudou de mão. Não afeta a conta em dinheiro. |
+| **Divisão** | Como o valor se divide entre os dois — ver "Como a conta é feita" abaixo. |
+        """)
+
+    with st.expander("🏷️ O que é cada Tipo"):
+        st.markdown("""
+- **Compra Mercadoria** — comprou produto/mercadoria pro negócio.
+- **Transferência Estoque** — um mandou estoque físico pro outro (tem o campo extra de SKU).
+- **Empréstimo Pessoal** — dinheiro emprestado entre os dois, sem ligação com o negócio.
+- **Empréstimo Empresarial** — dinheiro emprestado ligado ao negócio.
+- **Gasto Empresarial** — despesa do negócio que não é compra de mercadoria (frete, serviço, carreto, etc).
+- **Acerto (Pix / Desconto)** — quando um dos dois já mandou um Pix ou fez um desconto direto pra ajustar o saldo. Esse é o único tipo que funciona diferente dos outros — ver abaixo.
+
+Todos, menos o Acerto, entram na conta do saldo do mesmo jeito (explicado a seguir). O Tipo é só pra organizar e filtrar depois.
+        """)
+
+    with st.expander("🧮 Como a conta é feita — passo a passo com exemplo real", expanded=True):
+        st.markdown(r"""
+**A regra base:** quem pagou tem direito a receber de volta a parte que é do outro, de acordo com a Divisão escolhida.
+
+**Passo 1 — Valor total:** Quantidade × Valor unitário (ou o valor digitado direto).
+
+**Passo 2 — Divisão escolhida define quanto fica pra cada um:**
+
+| Divisão | Bruna fica com | Vinicius fica com |
+|---|---|---|
+| Meio a Meio | 50% | 50% |
+| 100% Bruna | 100% (gasto só dela) | 0% |
+| 100% Vinicius | 0% | 100% (gasto só dele) |
+| % Personalizado | você escolhe o % da Bruna | o resto (100% − % da Bruna) |
+
+**Passo 3 — O sistema calcula quanto o OUTRO deve pra quem pagou** (a parte que não é dele/dela):
+
+- Se a **Bruna pagou**: o Vinicius deve a ela a fatia que é dele.
+- Se o **Vinicius pagou**: a Bruna deve a ele a fatia que é dela.
+
+---
+#### Exemplo real — o lançamento "Carreto p/ ivete"
+
+| | |
+|---|---|
+| Tipo | Gasto Empresarial |
+| Quem pagou | **Bruna** |
+| Valor total | **R\$ 160,00** |
+| Divisão | Meio a Meio (50% / 50%) |
+
+A Bruna pagou os R\$ 160,00 inteiros. Como a divisão é Meio a Meio, a fatia do Vinicius é metade:
+
+**R\$ 160,00 × 50% = R\$ 80,00**
+
+Por isso o card mostra **R\$ 160,00** em preto (o valor total gasto) e **+R\$ 80,00** em verde embaixo (o quanto o Vinicius deve à Bruna por causa desse lançamento). **Não está errado nem duplicado — R\$ 80 já É a metade de R\$ 160.**
+
+---
+#### O saldo total (card grande da Visão Geral)
+
+O saldo é a soma de todos esses "quanto o outro deve" de cada lançamento:
+
+- **Saldo positivo** → "Vinicius deve para a Bruna" (mostrado em verde).
+- **Saldo negativo** → "Bruna deve para o Vinicius" (mostrado em vermelho).
+- **Saldo zero** → estão quites.
+
+⚠️ **Atenção:** o saldo total conta TODOS os lançamentos que existem no Histórico — inclusive os marcados como **Cancelado**. Marcar como Cancelado não tira o valor da conta; só o **🗑 Excluir** tira de vez. Se um lançamento não deve mais contar pro saldo, é preciso excluir, não só cancelar.
+        """)
+
+    with st.expander("💸 Acerto (Pix / Desconto) — como funciona"):
+        st.markdown(r"""
+Esse tipo é diferente dos outros: serve pra registrar quando um dos dois **já mandou dinheiro direto pro outro** (um Pix, um desconto) pra abater o saldo — não é uma compra nem um gasto novo, é um pagamento do que já era devido.
+
+Em "Quem pagou / transferiu / emprestou", escolha **quem mandou o Pix** dessa vez.
+
+**Exemplo:** o Vinicius deve R\$ 500,00 pra Bruna. Ele manda um Pix de R\$ 200,00 pra ela.
+Lance um Acerto com **Quem pagou = Vinicius** e **Valor = R\$ 200,00**.
+O saldo cai de R\$ 500,00 para **R\$ 300,00** — o Vinicius ainda deve R\$ 300,00.
+
+A regra vale pros dois lados: quem manda o Pix nesse tipo de lançamento sempre reduz o quanto devia (ou aumenta o quanto o outro passa a dever, se não havia dívida).
+        """)
+
+    with st.expander("🚦 Status de cada lançamento"):
+        st.markdown("""
+- **Pendente** — ainda não foi confirmado por ninguém (é o status inicial de todo lançamento novo).
+- **Confirmado** — os dois já validaram que está certo.
+- **Cancelado** — não vale mais, mas fica registrado no Histórico (⚠️ ainda soma no saldo total — ver aviso acima).
+
+Pra mudar o status de um lançamento: no Histórico, clique no ícone **📋** da linha dele.
+        """)
+
+    with st.expander("🛠️ Os botões de cada lançamento no Histórico"):
+        st.markdown("""
+- **📋** — abre o painel pra mudar o Status (Pendente/Confirmado/Cancelado) e a Observação, e baixar o comprovante se tiver.
+- **✏️** — edita o lançamento (data, quem pagou, descrição, fornecedor, referência, valor total, observação). A Divisão escolhida na criação **não muda** na edição — só o valor total.
+- **🗑** — exclui o lançamento de vez (pede confirmação antes). É a única forma de tirar o valor do saldo total pra sempre.
+        """)
+
+    st.caption("Alguma coisa não bateu ou ficou confusa? Fala com quem mantém o app pra revisar essa explicação.")

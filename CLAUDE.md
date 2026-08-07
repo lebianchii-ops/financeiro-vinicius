@@ -128,6 +128,26 @@ privados.
   existente sem a protecao que o Lancar (criar) ja tinha. Trocado por `st.text_input` +
   parse manual (mesmo padrao do Valor unitario), com validacao no submit (recusa salvar
   se o valor digitado for invalido ou <= 0, mostra erro e nao fecha o form).
+- **🚨 A PRIMEIRA tentativa do fix da calculadora (acima) quebrou a calculadora inteira
+  (nem clique nem teclado funcionavam) — causa e correcao real:** o comentario JS que
+  explicava o guard tinha a tag `<details>` escrita literal (ex: "Streamlit usa
+  `<details>` nativo"). Isso confundiu o sanitizador que o Streamlit usa por baixo do
+  `st.html(..., unsafe_allow_javascript=True)` — ele cortou o `<script>` INTEIRO do
+  HTML antes de mandar pro navegador (o `<div class="calc">` e os botoes continuavam
+  aparecendo normal, so o script sumia, silenciosamente, sem erro nenhum no console).
+  Diagnostico: comparar `document.querySelector('.stHtml').innerHTML.length` antes/depois
+  — caiu de ~4650 pra ~2305 chars (o `<script>` todo tinha sumido). **Regra nova, vale
+  pra qualquer HTML/JS gerado por `st.html()` neste projeto: NUNCA escrever uma tag HTML
+  entre `<` e `>` dentro de comentario JS ou string — nem pra citar o nome de um elemento.
+  Escrever sem os sinais de menor/maior (ex: "elemento details", nao "`<details>`").**
+  Depois de tirar os `<details>`/`</details>` literais dos comentarios, o script voltou
+  (confirmado: `typeof window.num === 'function'`) e todos os testes bateram: fechada
+  ignora teclado, clique funciona, aberta processa teclado (7+5=12) — e o cenario exato
+  do bug original (visitar Historico fechado → ir pro Lancar → digitar numero) tambem
+  voltou a funcionar. Achado porque a Bruna testou e avisou "nem digitando nem clicando"
+  — o teste automatizado da sessao anterior nao pegou isso (rodava numa aba de fundo que
+  nao executa o script do Streamlit de jeito nenhum, entao "num undefined" parecia normal
+  e mascarou o bug real introduzido pelo proprio fix).
 
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

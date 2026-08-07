@@ -830,10 +830,10 @@ with tab3:
     // So intercepta teclado quando a calculadora estiver REALMENTE aberta.
     // Sem isso, o listener continua ativo pra pagina inteira mesmo com o
     // expander fechado e bloqueia digitos em QUALQUER outro campo do app
-    // (bug confirmado 07/08/2026). O expander do Streamlit usa <details>
-    // nativo por baixo - checar offsetParent NAO funciona (o conteudo
-    // continua "visivel" via CSS mesmo fechado), tem que checar o .open
-    // do <details> mesmo.
+    // (bug confirmado 07/08/2026). O expander do Streamlit usa o elemento
+    // nativo "details" por baixo - checar offsetParent NAO funciona (o
+    // conteudo continua "visivel" via CSS mesmo fechado), tem que checar
+    // o .open do elemento details mesmo.
     const wrap = document.getElementById('calcWrap');
     const detalhes = wrap ? wrap.closest('details') : null;
     if (!wrap || !detalhes || !detalhes.open) return;

@@ -162,6 +162,27 @@ privados.
   sumido silenciosamente (ex: "R$ 160,00" virava "R 160,00"). **Regra: todo "R$" dentro
   de `st.markdown()` neste projeto tem que ser escrito `R\$`**, e a string precisa ser
   raw (`st.markdown(r"""..."""`) pra o Python não reclamar do escape invalido.
+- **Campo "Divisão" adicionado na tela de Editar lançamento (Histórico → ✏️) — antes não
+  existia, so dava pra escolher a divisão na hora de CRIAR (Lançar), nunca dava pra
+  corrigir depois.** Achado pela Bruna ao editar o "Carreto p/ ivete" e não ver a opção.
+  Confirmado que os dados nunca se perderam (o real `divisao`/`pct_bruna` sempre
+  continuaram salvos certos) — só a tela de edição nunca expunha esse campo. Adicionado
+  o mesmo seletor (Meio a Meio / 100% Bruna / 100% Vinicius / % Personalizado) igual ao
+  Lançar, recalculando `valor_liquido` no Salvar. Tipo "Acerto (Pix/Desconto)" não mostra
+  Divisão (nunca usou, o valor inteiro sempre conta - igual ao Lançar).
+  **Por que a tela de Editar deixou de usar `st.form`:** dentro de `st.form`, nenhum
+  widget dispara rerun sozinho — escolher "% Personalizado" só revelaria o campo do %
+  depois de clicar Salvar (tarde demais pra digitar o % na mesma tela). Tirado o
+  `st.form`, virou widgets soltos + `st.button` (mesmo padrão do Lançar, que nunca usou
+  form), e agora o campo do % aparece na hora.
+  **Pegadinha de teste automatizado encontrada aqui (não afeta usuário real):** testar
+  esse tipo de campo via automação exige um blur/Enter GENUÍNO antes de clicar Salvar —
+  `st.text_input` do Streamlit só manda o valor pro backend Python quando o campo perde
+  o foco de verdade. Clique por coordenada na aba de fundo às vezes não tira o foco
+  (fica preso no campo), fazendo o teste salvar o valor antigo mesmo com "25" visível na
+  tela. Diagnosticado comparando `document.activeElement` antes/depois de cada tentativa;
+  só funcionou dando `.focus()` via JS num campo diferente pra forçar o blur real. Uma
+  pessoa de verdade clicando com o mouse não tem esse problema.
 
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

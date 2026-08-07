@@ -671,79 +671,134 @@ with tab3:
         l_edit = next((l for l in lancamentos if l["id"] == st.session_state.editando_id), None)
         if l_edit:
             st.markdown("### ✏️ Editando lançamento")
-            with st.form("form_editar"):
-                e1, e2, e3 = st.columns(3)
-                with e1:
-                    nova_data = st.date_input(
-                        "Data",
-                        value=datetime.strptime(l_edit["data"], "%Y-%m-%d").date(),
-                        format="DD/MM/YYYY",
-                    )
-                    novo_quem = st.selectbox(
-                        "Quem pagou",
-                        ["Bruna","Vinicius"],
-                        index=["Bruna","Vinicius"].index(l_edit.get("quem_arcou","Bruna")),
-                    )
-                with e2:
-                    nova_desc       = st.text_input("Descrição", value=l_edit.get("descricao",""), autocomplete="off")
-                    novo_fornecedor = st.text_input("Fornecedor / Pessoa", value=l_edit.get("fornecedor",""), autocomplete="off")
-                    nova_ref        = st.text_input("Referência", value=l_edit.get("referencia",""), autocomplete="off")
-                with e3:
-                    # st.number_input DENTRO de st.form pode perder o valor digitado
-                    # silenciosamente (confirmado no funcionaria-lb) — por isso e texto
-                    # livre + parse manual, igual ao campo "Valor unitario" do Lancar.
-                    valor_atual_str = f"{float(l_edit.get('valor_total', 0.0)):.2f}".replace(".", ",")
-                    novo_valor_str = st.text_input(
-                        "Valor total (R$)",
-                        value=valor_atual_str,
-                        placeholder="ex: 573 ou 573,50",
-                        autocomplete="off",
-                    )
-                    nova_obs = st.text_area("Observação", value=l_edit.get("obs",""), height=90)
+            eid = l_edit["id"]
+            tipo_edit = l_edit.get("tipo", "")
+            # Acerto (Pix/Desconto) nao usa divisao — o valor inteiro conta (ver Lancar).
+            mostra_divisao = tipo_edit != "Acerto (Pix / Desconto)"
 
-                eb1, eb2 = st.columns(2)
-                with eb1:
-                    salvar_edit = st.form_submit_button("💾 Salvar", type="primary", use_container_width=True)
-                with eb2:
-                    cancelar    = st.form_submit_button("✖ Cancelar", use_container_width=True)
+            # ⚠️ SEM st.form aqui de proposito: dentro de st.form nenhum widget
+            # dispara rerun sozinho, entao escolher "% Personalizado" nao revelaria
+            # o campo do % ate o Salvar ser clicado (tarde demais pra digitar o %
+            # na mesma tela). Fora do form cada campo atualiza a tela na hora — e
+            # o mesmo padrao ja usado na aba Lancar, que tambem nao usa st.form.
+            e1, e2, e3 = st.columns(3)
+            with e1:
+                nova_data = st.date_input(
+                    "Data",
+                    value=datetime.strptime(l_edit["data"], "%Y-%m-%d").date(),
+                    format="DD/MM/YYYY",
+                    key=f"edit_data_{eid}",
+                )
+                novo_quem = st.selectbox(
+                    "Quem pagou",
+                    ["Bruna","Vinicius"],
+                    index=["Bruna","Vinicius"].index(l_edit.get("quem_arcou","Bruna")),
+                    key=f"edit_quem_{eid}",
+                )
+            with e2:
+                nova_desc       = st.text_input("Descrição", value=l_edit.get("descricao",""), autocomplete="off", key=f"edit_desc_{eid}")
+                novo_fornecedor = st.text_input("Fornecedor / Pessoa", value=l_edit.get("fornecedor",""), autocomplete="off", key=f"edit_forn_{eid}")
+                nova_ref        = st.text_input("Referência", value=l_edit.get("referencia",""), autocomplete="off", key=f"edit_ref_{eid}")
+            with e3:
+                # st.number_input pode perder o valor digitado silenciosamente
+                # (confirmado no funcionaria-lb, mais grave ainda dentro de forms)
+                # — por isso e texto livre + parse manual, igual ao "Valor unitario".
+                valor_atual_str = f"{float(l_edit.get('valor_total', 0.0)):.2f}".replace(".", ",")
+                novo_valor_str = st.text_input(
+                    "Valor total (R$)",
+                    value=valor_atual_str,
+                    placeholder="ex: 573 ou 573,50",
+                    autocomplete="off",
+                    key=f"edit_valor_{eid}",
+                )
+                nova_obs = st.text_area("Observação", value=l_edit.get("obs",""), height=90, key=f"edit_obs_{eid}")
 
-                if salvar_edit:
+            novo_pct_str = None
+            if mostra_divisao:
+                divisao_atual = l_edit.get("divisao", "Meio a Meio")
+                if divisao_atual not in DIVISOES:
+                    divisao_atual = "Meio a Meio"
+                nova_divisao = st.radio(
+                    "Divisão",
+                    DIVISOES,
+                    index=DIVISOES.index(divisao_atual),
+                    horizontal=True,
+                    key=f"edit_divisao_{eid}",
+                )
+                if nova_divisao == "Meio a Meio":
+                    novo_pct_bruna = 50.0
+                elif nova_divisao == "100% Bruna":
+                    novo_pct_bruna = 100.0
+                elif nova_divisao == "100% Vinicius":
+                    novo_pct_bruna = 0.0
+                else:
+                    pct_atual_str = f"{float(l_edit.get('pct_bruna', 50.0)):.0f}"
+                    novo_pct_str = st.text_input(
+                        "% Bruna (0 a 100, o resto fica com o Vinicius)",
+                        value=pct_atual_str,
+                        placeholder="ex: 30",
+                        key=f"edit_pct_{eid}",
+                    )
+            else:
+                nova_divisao   = l_edit.get("divisao", "Integral")
+                novo_pct_bruna = l_edit.get("pct_bruna", 50.0)
+                st.caption("Esse tipo (Acerto) não usa divisão — o valor inteiro conta no saldo.")
+
+            eb1, eb2 = st.columns(2)
+            with eb1:
+                salvar_edit = st.button("💾 Salvar", type="primary", use_container_width=True, key=f"edit_salvar_{eid}")
+            with eb2:
+                cancelar    = st.button("✖ Cancelar", use_container_width=True, key=f"edit_cancelar_{eid}")
+
+            if salvar_edit:
+                try:
+                    novo_valor = float(
+                        novo_valor_str.replace("R$", "").replace(".", "").replace(",", ".").strip()
+                    )
+                except ValueError:
+                    novo_valor = None
+                if novo_valor is None or novo_valor <= 0:
+                    st.error("Valor total invalido — corrija (ex: 573 ou 573,50) e salve de novo.")
+                    st.stop()
+
+                if mostra_divisao and nova_divisao == "% Personalizado":
                     try:
-                        novo_valor = float(
-                            novo_valor_str.replace("R$", "").replace(".", "").replace(",", ".").strip()
-                        )
-                    except ValueError:
-                        novo_valor = None
-                    if novo_valor is None or novo_valor <= 0:
-                        st.error("Valor total invalido — corrija (ex: 573 ou 573,50) e salve de novo.")
+                        pct_final = float(novo_pct_str.replace(",", ".").strip())
+                    except (ValueError, AttributeError):
+                        pct_final = None
+                    if pct_final is None or not (0 <= pct_final <= 100):
+                        st.error("% da Bruna invalido — digite um numero entre 0 e 100.")
                         st.stop()
-                    for i, l in enumerate(lancamentos):
-                        if l["id"] == st.session_state.editando_id:
-                            novo_vl = calcular_valor_liquido(
-                                novo_valor,
-                                lancamentos[i].get("divisao", "Meio a Meio"),
-                                lancamentos[i].get("pct_bruna", 50.0),
-                                novo_quem,
-                            )
-                            lancamentos[i].update({
-                                "data":          str(nova_data),
-                                "quem_arcou":    novo_quem,
-                                "descricao":     nova_desc.strip(),
-                                "fornecedor":    novo_fornecedor.strip(),
-                                "referencia":    nova_ref.strip(),
-                                "valor_total":   round(novo_valor, 2),
-                                "valor_liquido": round(novo_vl, 2),
-                                "obs":           nova_obs.strip(),
-                            })
-                            break
-                    st.session_state["lancamentos"] = lancamentos
-                    if not salvar(lancamentos):
-                        st.stop()
-                    st.session_state.editando_id = None
-                    st.rerun()
-                if cancelar:
-                    st.session_state.editando_id = None
-                    st.rerun()
+                else:
+                    pct_final = novo_pct_bruna
+
+                for i, l in enumerate(lancamentos):
+                    if l["id"] == st.session_state.editando_id:
+                        if mostra_divisao:
+                            novo_vl = calcular_valor_liquido(novo_valor, nova_divisao, pct_final, novo_quem)
+                        else:
+                            novo_vl = abs(novo_valor)
+                        lancamentos[i].update({
+                            "data":          str(nova_data),
+                            "quem_arcou":    novo_quem,
+                            "descricao":     nova_desc.strip(),
+                            "fornecedor":    novo_fornecedor.strip(),
+                            "referencia":    nova_ref.strip(),
+                            "valor_total":   round(novo_valor, 2),
+                            "divisao":       nova_divisao,
+                            "pct_bruna":     pct_final,
+                            "valor_liquido": round(novo_vl, 2),
+                            "obs":           nova_obs.strip(),
+                        })
+                        break
+                st.session_state["lancamentos"] = lancamentos
+                if not salvar(lancamentos):
+                    st.stop()
+                st.session_state.editando_id = None
+                st.rerun()
+            if cancelar:
+                st.session_state.editando_id = None
+                st.rerun()
             st.divider()
 
     # Calculadora

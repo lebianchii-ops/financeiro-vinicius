@@ -87,5 +87,19 @@ privados.
   inline — usar `data-*` + `addEventListener`, senao o clique fica mudo mesmo com o
   parametro certo.
 
+## Correcoes de 07/08/2026
+
+- **Campo "Valor unitario (R$)" (e outros campos de texto livre do formulario Lancar/editar)
+  pareciam nao aceitar numeros** — na verdade o campo em si funcionava normal (testado via
+  automacao: digitar "573,50" registrava certo). O problema era o **autocomplete nativo do
+  navegador** (Chrome/Edge) mostrando uma caixinha de sugestoes com valores digitados antes
+  (ex: "2", "5") por baixo do campo, que atrapalhava a digitacao. `st.text_input` aceita o
+  parametro `autocomplete` desde a versao instalada (1.57.0) — adicionado `autocomplete="off"`
+  em: Descricao, Fornecedor/Pessoa, Referencia, SKU do produto e Valor unitario (formulario de
+  lancar) e nos mesmos campos do formulario de editar lancamento. Testado local (rodar_dashboard,
+  porta 8541): digitou "250,90", calculo apareceu certo, sem a caixinha de sugestao.
+- **Regra para qualquer `st.text_input` novo neste projeto:** sempre passar `autocomplete="off"`
+  para evitar essa mesma confusao visual.
+
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

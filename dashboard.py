@@ -509,19 +509,19 @@ with tab2:
         categoria  = st.radio("Categoria", ["💼 Empresarial", "🏠 Pessoal"], horizontal=True, key=f"cat_{fv}")
 
     with c2:
-        descricao = st.text_input("Descrição", key=f"desc_{fv}")
+        descricao = st.text_input("Descrição", key=f"desc_{fv}", autocomplete="off")
 
         if fornecedores_hist:
             opcoes_forn = [""] + fornecedores_hist + ["✏️ Outro (digitar)"]
             sel_forn = st.selectbox("Fornecedor / Pessoa", opcoes_forn, key=f"forn_sel_{fv}")
             if sel_forn == "✏️ Outro (digitar)":
-                fornecedor = st.text_input("Nome do fornecedor", key=f"forn_novo_{fv}")
+                fornecedor = st.text_input("Nome do fornecedor", key=f"forn_novo_{fv}", autocomplete="off")
             else:
                 fornecedor = sel_forn
         else:
-            fornecedor = st.text_input("Fornecedor / Pessoa", key=f"forn_{fv}")
+            fornecedor = st.text_input("Fornecedor / Pessoa", key=f"forn_{fv}", autocomplete="off")
 
-        referencia = st.text_input("Referência (opcional)", key=f"ref_{fv}")
+        referencia = st.text_input("Referência (opcional)", key=f"ref_{fv}", autocomplete="off")
 
     with c3:
         comprovante = st.file_uploader(
@@ -530,7 +530,7 @@ with tab2:
             key=f"comp_{fv}",
         )
         if tipo == "Transferência Estoque":
-            sku = st.text_input("SKU do produto (ex: LB00123)", key=f"sku_{fv}")
+            sku = st.text_input("SKU do produto (ex: LB00123)", key=f"sku_{fv}", autocomplete="off")
         else:
             sku = ""
         obs = st.text_area("Observação (opcional)", height=100, key=f"obs_{fv}")
@@ -540,7 +540,7 @@ with tab2:
     with va:
         qtd_calc = st.number_input("Quantidade", min_value=1, value=1, step=1, key=f"qtd_calc_{fv}")
     with vb:
-        vunit_str = st.text_input("Valor unitário (R$)", key=f"vunit_{fv}", placeholder="ex: 573 ou 573,50")
+        vunit_str = st.text_input("Valor unitário (R$)", key=f"vunit_{fv}", placeholder="ex: 573 ou 573,50", autocomplete="off")
     try:
         valor_unit = float(vunit_str.replace("R$","").replace(".","").replace(",",".").strip()) if vunit_str.strip() else 0.0
     except ValueError:
@@ -685,9 +685,9 @@ with tab3:
                         index=["Bruna","Vinicius"].index(l_edit.get("quem_arcou","Bruna")),
                     )
                 with e2:
-                    nova_desc       = st.text_input("Descrição", value=l_edit.get("descricao",""))
-                    novo_fornecedor = st.text_input("Fornecedor / Pessoa", value=l_edit.get("fornecedor",""))
-                    nova_ref        = st.text_input("Referência", value=l_edit.get("referencia",""))
+                    nova_desc       = st.text_input("Descrição", value=l_edit.get("descricao",""), autocomplete="off")
+                    novo_fornecedor = st.text_input("Fornecedor / Pessoa", value=l_edit.get("fornecedor",""), autocomplete="off")
+                    nova_ref        = st.text_input("Referência", value=l_edit.get("referencia",""), autocomplete="off")
                 with e3:
                     novo_valor = st.number_input(
                         "Valor total (R$)",

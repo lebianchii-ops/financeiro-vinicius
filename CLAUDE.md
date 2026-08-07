@@ -89,17 +89,45 @@ privados.
 
 ## Correcoes de 07/08/2026
 
-- **Campo "Valor unitario (R$)" (e outros campos de texto livre do formulario Lancar/editar)
-  pareciam nao aceitar numeros** — na verdade o campo em si funcionava normal (testado via
-  automacao: digitar "573,50" registrava certo). O problema era o **autocomplete nativo do
-  navegador** (Chrome/Edge) mostrando uma caixinha de sugestoes com valores digitados antes
-  (ex: "2", "5") por baixo do campo, que atrapalhava a digitacao. `st.text_input` aceita o
-  parametro `autocomplete` desde a versao instalada (1.57.0) — adicionado `autocomplete="off"`
-  em: Descricao, Fornecedor/Pessoa, Referencia, SKU do produto e Valor unitario (formulario de
-  lancar) e nos mesmos campos do formulario de editar lancamento. Testado local (rodar_dashboard,
-  porta 8541): digitou "250,90", calculo apareceu certo, sem a caixinha de sugestao.
-- **Regra para qualquer `st.text_input` novo neste projeto:** sempre passar `autocomplete="off"`
-  para evitar essa mesma confusao visual.
+- **🚨 CAUSA RAIZ REAL de "nao consigo digitar numero, so letra funciona":** a
+  **Calculadora** (aba Historico) registra `document.addEventListener('keydown', ...)`
+  **sem escopo nenhum** — ela intercepta digitos/`,`/`.`/`+`/`-`/Enter/Backspace da
+  PAGINA INTEIRA, mesmo com o expander da calculadora **fechado**, porque o
+  `<script>` roda uma vez e o listener fica vivo em `document` pro resto da sessao.
+  Resultado: depois de abrir a aba Historico (mesmo sem abrir a calculadora), digitar
+  numero em QUALQUER campo do app (ex: Valor unitario no Lancar) parava de funcionar —
+  so letras passavam, porque letras nao sao interceptadas pelo handler. Confirmado
+  tecnicamente (`event.dispatchEvent` retornando `false` = `preventDefault` disparado
+  pela calculadora num campo que nao tinha nada a ver com ela).
+  **Correcao:** o wrapper da calculadora ganhou `id="calcWrap"`, e o handler de teclado
+  agora checa **`elemento.closest('details').open`** antes de fazer qualquer coisa —
+  so intercepta teclado quando a calculadora esta REALMENTE aberta. Importante:
+  `offsetParent`/`display` do wrapper NAO sao confiaveis pra essa checagem (o
+  Streamlit usa `<details>` nativo por baixo do expander e o conteudo pode ficar
+  "visivel" via CSS mesmo fechado) — o unico sinal correto e o `.open` do `<details>`.
+  Logica testada isolada (Enter em `document.getElementById('calcWrap').closest('details').open`):
+  fechada ignora teclado, aberta processa normal (7+5=12, mesmo teste do fix de 30/07).
+- **Regra nova para qualquer widget custom em HTML/JS neste projeto (calculadora ou
+  futuro): NUNCA usar `document.addEventListener` sem checar se o proprio widget esta
+  visivel/aberto primeiro.** Um listener global de teclado/clique sem esse guard
+  vaza pra pagina inteira e quebra outros campos de forma silenciosa e dificil de
+  diagnosticar (o campo "parece" quebrado, mas o bug esta em outro componente).
+- **Campo "Valor unitario (R$)" (e outros campos de texto livre do Lancar/editar)** —
+  alem da causa raiz acima, tambem tinha a caixinha de sugestao nativa do navegador
+  (Chrome/Edge) aparecendo por cima, o que so piorava a confusao visual. `st.text_input`
+  aceita o parametro `autocomplete` desde a versao instalada (1.57.0) — adicionado
+  `autocomplete="off"` em: Descricao, Fornecedor/Pessoa, Referencia, SKU do produto e
+  Valor unitario (formulario de lancar) e nos mesmos campos + Valor total do formulario
+  de editar lancamento. Testado local: digitou "250,90"/"160,00→160,0099", calculo/valor
+  atualizou certo, sem a caixinha de sugestao.
+- **Regra para qualquer `st.text_input` novo neste projeto:** sempre passar `autocomplete="off"`.
+- **Tela de editar lancamento usava `st.number_input` DENTRO de `st.form`** pro campo
+  "Valor total (R$)" — exatamente o padrao ja documentado no CLAUDE.md global como
+  perigoso (perde o valor digitado silenciosamente, sem erro nenhum, ja confirmado no
+  funcionaria-lb). Era o unico lugar do app que editava valor real de um lancamento ja
+  existente sem a protecao que o Lancar (criar) ja tinha. Trocado por `st.text_input` +
+  parse manual (mesmo padrao do Valor unitario), com validacao no submit (recusa salvar
+  se o valor digitado for invalido ou <= 0, mostra erro e nao fecha o form).
 
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

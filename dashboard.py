@@ -689,11 +689,15 @@ with tab3:
                     novo_fornecedor = st.text_input("Fornecedor / Pessoa", value=l_edit.get("fornecedor",""), autocomplete="off")
                     nova_ref        = st.text_input("Referência", value=l_edit.get("referencia",""), autocomplete="off")
                 with e3:
-                    novo_valor = st.number_input(
+                    # st.number_input DENTRO de st.form pode perder o valor digitado
+                    # silenciosamente (confirmado no funcionaria-lb) — por isso e texto
+                    # livre + parse manual, igual ao campo "Valor unitario" do Lancar.
+                    valor_atual_str = f"{float(l_edit.get('valor_total', 0.0)):.2f}".replace(".", ",")
+                    novo_valor_str = st.text_input(
                         "Valor total (R$)",
-                        min_value=0.01,
-                        value=float(l_edit.get("valor_total", 0.01)),
-                        format="%.2f",
+                        value=valor_atual_str,
+                        placeholder="ex: 573 ou 573,50",
+                        autocomplete="off",
                     )
                     nova_obs = st.text_area("Observação", value=l_edit.get("obs",""), height=90)
 
@@ -704,6 +708,15 @@ with tab3:
                     cancelar    = st.form_submit_button("✖ Cancelar", use_container_width=True)
 
                 if salvar_edit:
+                    try:
+                        novo_valor = float(
+                            novo_valor_str.replace("R$", "").replace(".", "").replace(",", ".").strip()
+                        )
+                    except ValueError:
+                        novo_valor = None
+                    if novo_valor is None or novo_valor <= 0:
+                        st.error("Valor total invalido — corrija (ex: 573 ou 573,50) e salve de novo.")
+                        st.stop()
                     for i, l in enumerate(lancamentos):
                         if l["id"] == st.session_state.editando_id:
                             novo_vl = calcular_valor_liquido(
@@ -761,7 +774,7 @@ with tab3:
   button.cl:hover { background:#dc2626; }
   button.zero { grid-column:span 2; }
 </style>
-<div class="calc">
+<div class="calc" id="calcWrap">
   <div class="sub" id="sub"></div>
   <div class="display" id="disp">0</div>
   <div class="grid">
@@ -814,6 +827,16 @@ with tab3:
     cur=String(r); pendOp=''; fresh=true; show();
   }
   document.addEventListener('keydown', function(e){
+    // So intercepta teclado quando a calculadora estiver REALMENTE aberta.
+    // Sem isso, o listener continua ativo pra pagina inteira mesmo com o
+    // expander fechado e bloqueia digitos em QUALQUER outro campo do app
+    // (bug confirmado 07/08/2026). O expander do Streamlit usa <details>
+    // nativo por baixo - checar offsetParent NAO funciona (o conteudo
+    // continua "visivel" via CSS mesmo fechado), tem que checar o .open
+    // do <details> mesmo.
+    const wrap = document.getElementById('calcWrap');
+    const detalhes = wrap ? wrap.closest('details') : null;
+    if (!wrap || !detalhes || !detalhes.open) return;
     const k = e.key;
     if(k>='0' && k<='9'){ num(k); e.preventDefault(); }
     else if(k==='.' || k===','){ dot(); e.preventDefault(); }

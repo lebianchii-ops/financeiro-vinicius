@@ -1,5 +1,27 @@
 [
   {
+    "id": "fdf38904",
+    "data": "2026-08-08",
+    "tipo": "Gasto Empresarial",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Supermercado Atacadão",
+    "fornecedor": "Atacadão",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 90.45,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 45.23,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 90.45,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-08-08T18:42:57.231117"
+  },
+  {
     "id": "f464e2be",
     "data": "2026-07-29",
     "tipo": "Gasto Empresarial",

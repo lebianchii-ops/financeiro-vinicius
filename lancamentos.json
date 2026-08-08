@@ -1,5 +1,27 @@
 [
   {
+    "id": "f11568e4",
+    "data": "2026-08-08",
+    "tipo": "Compra Mercadoria",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "TESTE CADASTRO - APAGAR",
+    "fornecedor": "",
+    "referencia": "NF-1234",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 50.0,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 25.0,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 50.0,
+    "categoria": "💼 Empresarial",
+    "obs": "Observacao de teste pra ver se aparece na lista",
+    "criado_em": "2026-08-08T15:27:15.304912"
+  },
+  {
     "id": "f464e2be",
     "data": "2026-07-29",
     "tipo": "Gasto Empresarial",

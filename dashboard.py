@@ -422,19 +422,40 @@ with tab1:
             vl  = l.get("valor_liquido", 0.0)
             cor_vl = "#16a34a" if vl >= 0 else "#dc2626"
             sinal  = "+" if vl >= 0 else "−"
+
+            # Informacao de cadastro completa aqui tambem, sem precisar abrir
+            # o lancamento um por um (pedido da Bruna 07/08/2026).
+            partes_cad = []
+            if l.get("fornecedor"):
+                partes_cad.append(l["fornecedor"])
+            if l.get("referencia"):
+                partes_cad.append(f"Ref: {l['referencia']}")
+            if l.get("sku"):
+                partes_cad.append(f"{l['sku']} ({l.get('qtd',1)}x)")
+            cad_txt = (
+                f"<div style='font-size:0.74rem;color:#94a3b8;white-space:nowrap;"
+                f"overflow:hidden;text-overflow:ellipsis'>{' · '.join(partes_cad)}</div>"
+            ) if partes_cad else ""
+            obs_txt = (
+                f"<div style='font-size:0.72rem;color:#64748b;white-space:nowrap;"
+                f"overflow:hidden;text-overflow:ellipsis'>💬 {l.get('obs','')}</div>"
+            ) if l.get("obs") else ""
+            cat_txt = l.get("categoria", "")
+
             st.markdown(
                 f"""<div style='display:flex;align-items:center;gap:12px;
                     background:white;border-radius:10px;padding:10px 14px;
                     margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,0.05)'>
                   <div style='min-width:52px;font-size:0.78rem;font-weight:700;
                        color:#374151'>{fmt_data(l['data'])}</div>
-                  <div style='flex:1;min-width:0'>
+                  <div style='flex:1.6;min-width:0'>
                     <div style='background:{tc}22;color:{tc};font-size:0.68rem;
                          font-weight:700;border-radius:4px;display:inline-block;
                          padding:1px 6px;margin-bottom:2px'>{l['tipo']}</div>
+                    <span style='font-size:0.66rem;color:#94a3b8'>{cat_txt}</span>
                     <div style='font-size:0.85rem;font-weight:600;color:#1e293b;
                          white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>
-                         {l.get('descricao','—')}</div>
+                         {l.get('descricao','—')}</div>{cad_txt}{obs_txt}
                   </div>
                   <div style='text-align:right;min-width:80px'>
                     <div style='font-size:0.88rem;font-weight:700;color:#1e293b'>
@@ -1019,15 +1040,24 @@ with tab3:
                     unsafe_allow_html=True,
                 )
             with r2:
+                # Informacao de cadastro completa na linha, sem precisar abrir
+                # o lancamento um por um (pedido da Bruna 07/08/2026).
                 forn    = f"<span style='color:#94a3b8'> · {l.get('fornecedor','')}</span>" if l.get("fornecedor") else ""
+                ref_txt = f"<span style='color:#94a3b8'> · Ref: {l.get('referencia','')}</span>" if l.get("referencia") else ""
                 sku_txt = f"<span style='color:#94a3b8'> · {l.get('sku','')} ({l.get('qtd',1)}x)</span>" if l.get("sku") else ""
+                cat_txt = l.get("categoria", "")
                 comp_ic = "&nbsp;📎" if l.get("comprovante") or l.get("comprovante_b64") else ""
-                obs_ic  = "&nbsp;💬" if l.get("obs") else ""
+                obs_txt = (
+                    f"<div style='font-size:0.74rem;color:#64748b;margin-top:2px'>"
+                    f"💬 {l.get('obs','')}</div>"
+                ) if l.get("obs") else ""
                 st.markdown(
-                    f"<div style='margin-bottom:3px'>{badge(l['tipo'], tipo_cor)}</div>"
+                    f"<div style='margin-bottom:3px'>{badge(l['tipo'], tipo_cor)} "
+                    f"<span style='font-size:0.68rem;color:#94a3b8'>{cat_txt}</span></div>"
                     f"<div style='font-size:0.88rem;color:#1e293b;font-weight:600'>"
-                    f"{l.get('descricao','')}{comp_ic}{obs_ic}</div>"
-                    f"<div style='font-size:0.78rem'>{forn}{sku_txt}</div>",
+                    f"{l.get('descricao','')}{comp_ic}</div>"
+                    f"<div style='font-size:0.78rem'>{forn}{ref_txt}{sku_txt}</div>"
+                    f"{obs_txt}",
                     unsafe_allow_html=True,
                 )
             with r3:

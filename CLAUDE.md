@@ -184,5 +184,27 @@ privados.
   só funcionou dando `.focus()` via JS num campo diferente pra forçar o blur real. Uma
   pessoa de verdade clicando com o mouse não tem esse problema.
 
+## Correcoes de 08/08/2026
+
+- **Informacao de cadastro (Fornecedor, Referencia, Observacao, Categoria) agora aparece
+  direto na lista, tanto no Historico quanto na Visao Geral (Ultimas transacoes)** —
+  pedido da Bruna pra nao precisar abrir cada lancamento um por um. Fornecedor e SKU ja
+  apareciam no Historico; adicionado Referencia, Observacao (texto completo, nao so o
+  icone 💬) e Categoria nos dois lugares.
+  **🚨 Bug serio encontrado e corrigido no caminho:** ao colocar `{cad_txt}` e `{obs_txt}`
+  em LINHAS PROPRIAS dentro do f-string multi-linha da Visao Geral, quando os dois ficavam
+  vazios (lancamento sem fornecedor/referencia/obs) sobravam linhas em branco no meio do
+  bloco de HTML. O Streamlit trata `st.markdown()` como Markdown antes de liberar o HTML
+  cru — uma linha em branco no meio quebra a deteccao de "isso e um bloco HTML continuo",
+  e o resto vira **texto literal na tela** (as tags `</div>` apareciam escritas mesmo pro
+  usuario). So aconteceu nessa tela porque o card da Visao Geral usa um `f"""..."""` com
+  quebras de linha de verdade; o card do Historico usa strings concatenadas numa linha so
+  (`f"..." f"..."`) e nunca teve esse problema.
+  **Regra nova pra esse projeto: nunca colocar uma variavel que pode vir vazia (`""`) na
+  SUA PROPRIA linha dentro de um `st.markdown()` multi-linha com HTML — sempre grudar no
+  final da linha anterior** (ex: `...</div>{cad_txt}{obs_txt}` em vez de cada uma na sua
+  linha). Testado com lancamento real preenchendo Referencia e Observacao: renderizou
+  certo nas duas telas, sem nenhuma tag aparecendo como texto.
+
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

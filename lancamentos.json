@@ -1,5 +1,27 @@
 [
   {
+    "id": "73797cbe",
+    "data": "2026-08-13",
+    "tipo": "Gasto Empresarial",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Frete Mega Cheins",
+    "fornecedor": "Amilton - Tio Jeferson",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 150.0,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 75.0,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 150.0,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-08-13T12:46:43.560994"
+  },
+  {
     "id": "fdf38904",
     "data": "2026-08-08",
     "tipo": "Gasto Empresarial",

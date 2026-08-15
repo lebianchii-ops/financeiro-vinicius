@@ -6,10 +6,16 @@ transferencia de estoque, emprestimos, acertos por Pix).
 - **Pasta local:** `C:\Users\brubi\B.Bianchi\Dashboard Financeiro`
 - **Repo:** `lebianchii-ops/financeiro-vinicius`
 - **App:** **https://financeiro-bruna-vini.streamlit.app** (subdominio curto, definido em
-  27/07/2026). O endereco antigo `financeiro-vinicius-3etyrkwsf9rzoaxvwmb22a.streamlit.app`
-  ainda responde, mas e o aleatorio que o Streamlit gera — dificil de digitar no celular,
-  foi ele que deu "Safari nao conecta ao servidor" (uma letra errada e o dominio nao existe).
-  Sempre passar o curto.
+  27/07/2026). ⚠️ **O endereco antigo `financeiro-vinicius-3etyrkwsf9rzoaxvwmb22a.streamlit.app`
+  MORREU** — testado em 15/08/2026, redireciona para `share.streamlit.io/errors/not_found`.
+  (Esta linha dizia que ele "ainda responde"; nao responde mais.) Quem clicar nele vai achar
+  que o app quebrou, quando e so o endereco velho. **So existe o curto.**
+- **O app DORME sozinho** depois de dias sem ninguem abrir ("This app has gone to sleep due to
+  inactivity", confirmado 15/08/2026). Nao e defeito: e o plano gratuito do Streamlit. Aparece
+  o botao "Yes, get this app back up!" e ele leva **1 a 2 minutos** para voltar. Se o Vinicius
+  disser que "nao abre", quase sempre e isso — esperar, nao consertar.
+  ⚠️ **`curl` devolvendo 200 NAO prova que o app esta no ar** — a casca do Streamlit responde
+  200 igual estando dormindo (errei exatamente isso em 15/08). So abrir e ler o conteudo prova.
 - **Rodar local:** `rodar_dashboard.bat`
 - **Dados:** `lancamentos.json` **no proprio repo**, lidos e gravados pela GitHub
   Contents API (`carregar()` / `salvar()` em `dashboard.py`) — igual ao painel da

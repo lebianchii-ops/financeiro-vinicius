@@ -1,5 +1,27 @@
 [
   {
+    "id": "4fad30dc",
+    "data": "2026-08-19",
+    "tipo": "Compra Mercadoria",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Livro Pintura Água",
+    "fornecedor": "Megacheins",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 315.0,
+    "divisao": "100% Vinicius",
+    "pct_bruna": 0.0,
+    "valor_liquido": 315.0,
+    "sku": "",
+    "qtd": 9,
+    "valor_unit": 35.0,
+    "categoria": "💼 Empresarial",
+    "obs": "9 pacotes com 12 UN",
+    "criado_em": "2026-08-19T09:17:11.533526"
+  },
+  {
     "id": "73797cbe",
     "data": "2026-08-13",
     "tipo": "Gasto Empresarial",

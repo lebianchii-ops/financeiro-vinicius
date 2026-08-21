@@ -423,7 +423,41 @@ with tab1:
             "📋 Últimas transações</div>",
             unsafe_allow_html=True,
         )
-        recentes = lancamentos[:7]
+
+        # Filtro aqui embaixo, igual ao do Histórico — mexe só nessa lista,
+        # nunca nos cards de saldo acima (esses sempre mostram o total real,
+        # sem filtro, pra nao confundir "saldo de verdade" com "saldo filtrado").
+        fvg1, fvg2, fvg3, fvg4 = st.columns([1.3, 1, 1, 1.3])
+        with fvg1:
+            filtro_tipo_vg = st.multiselect("Tipo", TIPOS, default=[], placeholder="Todos os tipos", key="vg_tipo")
+        with fvg2:
+            filtro_quem_vg = st.multiselect("Quem", ["Bruna", "Vinicius"], default=[], placeholder="Todos", key="vg_quem")
+        with fvg3:
+            filtro_status_vg = st.multiselect("Status", STATUS_OPTS, default=[], placeholder="Todos", key="vg_status")
+        with fvg4:
+            filtro_data_vg = st.date_input("Período", value=(), format="DD/MM/YYYY", key="vg_data")
+
+        lancamentos_vg = lancamentos[:]
+        if filtro_tipo_vg:
+            lancamentos_vg = [l for l in lancamentos_vg if l["tipo"] in filtro_tipo_vg]
+        if filtro_quem_vg:
+            lancamentos_vg = [l for l in lancamentos_vg if l["quem_arcou"] in filtro_quem_vg]
+        if filtro_status_vg:
+            lancamentos_vg = [l for l in lancamentos_vg if l.get("status", "Pendente") in filtro_status_vg]
+        if isinstance(filtro_data_vg, (list, tuple)) and len(filtro_data_vg) == 2:
+            d0_vg, d1_vg = str(filtro_data_vg[0]), str(filtro_data_vg[1])
+            lancamentos_vg = [l for l in lancamentos_vg if d0_vg <= l["data"] <= d1_vg]
+
+        filtro_vg_ativo = bool(filtro_tipo_vg or filtro_quem_vg or filtro_status_vg or
+                               (isinstance(filtro_data_vg, (list, tuple)) and len(filtro_data_vg) == 2))
+        if filtro_vg_ativo:
+            st.caption(f"{len(lancamentos_vg)} lançamento(s) encontrado(s)")
+            recentes = lancamentos_vg
+        else:
+            recentes = lancamentos_vg[:7]
+
+        if filtro_vg_ativo and not recentes:
+            st.info("Nenhum lançamento encontrado.")
         for l in recentes:
             tc  = TIPO_COR.get(l["tipo"], "#999")
             stc = STATUS_COR.get(l.get("status","Pendente"), "#999")

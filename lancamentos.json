@@ -1,5 +1,27 @@
 [
   {
+    "id": "c5ca2d91",
+    "data": "2026-08-21",
+    "tipo": "Transferência Estoque",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Jogo STOP",
+    "fornecedor": "",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 50.0,
+    "divisao": "100% Bruna",
+    "pct_bruna": 100.0,
+    "valor_liquido": 0.0,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 50.0,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-08-21T14:10:31.580179"
+  },
+  {
     "id": "aa7493af",
     "data": "2026-08-21",
     "tipo": "Transferência Estoque",

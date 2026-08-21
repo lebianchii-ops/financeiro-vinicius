@@ -1,5 +1,27 @@
 [
   {
+    "id": "aa7493af",
+    "data": "2026-08-21",
+    "tipo": "Transferência Estoque",
+    "status": "Pendente",
+    "quem_arcou": "Vinicius",
+    "descricao": "Espada K-POP",
+    "fornecedor": "Everest",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 280.0,
+    "divisao": "100% Bruna",
+    "pct_bruna": 100.0,
+    "valor_liquido": -280.0,
+    "sku": "",
+    "qtd": 14,
+    "valor_unit": 20.0,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-08-21T13:33:14.031699"
+  },
+  {
     "id": "4fad30dc",
     "data": "2026-08-19",
     "tipo": "Compra Mercadoria",

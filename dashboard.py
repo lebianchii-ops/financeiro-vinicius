@@ -199,6 +199,14 @@ def calcular_valor_liquido(valor_total, divisao, pct_bruna, quem_arcou):
         return round(valor_total * pct_v / 100, 2)
     return -round(valor_total * pct_bruna / 100, 2)
 
+def texto_impacto(valor):
+    """Traduz o valor com sinal em texto direto, sem exigir decorar a convenção +/-."""
+    if valor > 0:
+        return f"Vinicius deve {brl(valor)}", "#16a34a"
+    elif valor < 0:
+        return f"Bruna deve {brl(abs(valor))}", "#dc2626"
+    return "Sem impacto no saldo", "#94a3b8"
+
 def calcular_saldo(lcs):
     saldo = 0.0
     for l in lcs:
@@ -420,8 +428,7 @@ with tab1:
             tc  = TIPO_COR.get(l["tipo"], "#999")
             stc = STATUS_COR.get(l.get("status","Pendente"), "#999")
             vl  = l.get("valor_liquido", 0.0)
-            cor_vl = "#16a34a" if vl >= 0 else "#dc2626"
-            sinal  = "+" if vl >= 0 else "−"
+            txt_vl, cor_vl = texto_impacto(vl)
 
             # Informacao de cadastro completa aqui tambem, sem precisar abrir
             # o lancamento um por um (pedido da Bruna 07/08/2026).
@@ -457,11 +464,11 @@ with tab1:
                          white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>
                          {l.get('descricao','—')}</div>{cad_txt}{obs_txt}
                   </div>
-                  <div style='text-align:right;min-width:80px'>
+                  <div style='text-align:right;min-width:110px'>
                     <div style='font-size:0.88rem;font-weight:700;color:#1e293b'>
                          {brl(l['valor_total'])}</div>
-                    <div style='font-size:0.72rem;color:{cor_vl};font-weight:600'>
-                         {sinal}{brl(abs(vl))}</div>
+                    <div style='font-size:0.72rem;color:{cor_vl};font-weight:600;white-space:nowrap'>
+                         {txt_vl}</div>
                   </div>
                   <div style='min-width:70px;text-align:right'>
                     <span style='background:{stc}22;color:{stc};font-size:0.68rem;
@@ -977,13 +984,12 @@ with tab3:
 
     hh1, hh2 = st.columns([5, 1])
     with hh1:
-        cor_imp_f = "#16a34a" if impacto_filtrado >= 0 else "#dc2626"
-        sinal_f   = "+" if impacto_filtrado >= 0 else "−"
+        txt_imp_f, cor_imp_f = texto_impacto(impacto_filtrado)
         st.markdown(
             f"<div style='color:#64748b;font-size:0.85rem;padding:4px 0'>"
             f"{len(dados_filtrados)} lançamento(s) &nbsp;·&nbsp; "
             f"Total: <b style='color:#1e293b'>{brl(total_filtrado)}</b> &nbsp;·&nbsp; "
-            f"Impacto no saldo: <b style='color:{cor_imp_f}'>{sinal_f} {brl(abs(impacto_filtrado))}</b>"
+            f"Impacto no saldo: <b style='color:{cor_imp_f}'>{txt_imp_f}</b>"
             f"</div>",
             unsafe_allow_html=True)
     with hh2:
@@ -1025,8 +1031,7 @@ with tab3:
                 impacto = -vl if l["quem_arcou"] == "Vinicius" else vl
             else:
                 impacto = vl
-            cor_imp = "#16a34a" if impacto >= 0 else "#dc2626"
-            sinal   = "+" if impacto >= 0 else "−"
+            txt_imp, cor_imp = texto_impacto(impacto)
 
             r1, r2, r3, r4, r5 = st.columns([0.85, 3.2, 1.5, 1.1, 1.2])
 
@@ -1064,7 +1069,7 @@ with tab3:
                 st.markdown(
                     f"<div style='font-size:0.92rem;font-weight:700;color:#1e293b'>{brl(l['valor_total'])}</div>"
                     f"<div style='font-size:0.76rem;color:{cor_imp};font-weight:600;margin-top:1px'>"
-                    f"{sinal} {brl(abs(impacto))} no saldo</div>",
+                    f"{txt_imp}</div>",
                     unsafe_allow_html=True,
                 )
             with r4:

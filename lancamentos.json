@@ -1,5 +1,27 @@
 [
   {
+    "id": "a8d69351",
+    "data": "2026-09-08",
+    "tipo": "Compra Mercadoria",
+    "status": "Pendente",
+    "quem_arcou": "Vinicius",
+    "descricao": "4 Bonecas KPOP - 15/04",
+    "fornecedor": "",
+    "referencia": "4 Bonecas KPOP - 15/04",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 64.0,
+    "divisao": "100% Bruna",
+    "pct_bruna": 100.0,
+    "valor_liquido": -64.0,
+    "sku": "",
+    "qtd": 4,
+    "valor_unit": 16.0,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-09-08T17:51:04.988068"
+  },
+  {
     "id": "2b9cf2db",
     "data": "2026-09-08",
     "tipo": "Transferência Estoque",

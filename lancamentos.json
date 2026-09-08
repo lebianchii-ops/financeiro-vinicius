@@ -1,5 +1,27 @@
 [
   {
+    "id": "51a6ddec",
+    "data": "2026-09-08",
+    "tipo": "Transferência Estoque",
+    "status": "Pendente",
+    "quem_arcou": "Vinicius",
+    "descricao": "10 Mascaras de Led - 24/04",
+    "fornecedor": "",
+    "referencia": "10 Mascaras de Led - 24/04",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 530.0,
+    "divisao": "100% Bruna",
+    "pct_bruna": 100.0,
+    "valor_liquido": -530.0,
+    "sku": "",
+    "qtd": 10,
+    "valor_unit": 53.0,
+    "categoria": "💼 Empresarial",
+    "obs": "",
+    "criado_em": "2026-09-08T17:54:08.620981"
+  },
+  {
     "id": "0ad4e10d",
     "data": "2026-09-08",
     "tipo": "Gasto Empresarial",

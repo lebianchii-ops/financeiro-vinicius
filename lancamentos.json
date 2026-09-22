@@ -1,5 +1,27 @@
 [
   {
+    "id": "2fa3bbf7",
+    "data": "2026-09-22",
+    "tipo": "Gasto Empresarial",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Pendência Pgt balões",
+    "fornecedor": "",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 835.0,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 417.5,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 835.0,
+    "categoria": "💼 Empresarial",
+    "obs": "Produto natal",
+    "criado_em": "2026-09-22T19:11:21.646158"
+  },
+  {
     "id": "25e29997",
     "data": "2026-09-22",
     "tipo": "Gasto Empresarial",

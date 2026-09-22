@@ -212,5 +212,26 @@ privados.
   linha). Testado com lancamento real preenchendo Referencia e Observacao: renderizou
   certo nas duas telas, sem nenhuma tag aparecendo como texto.
 
+## Correcoes de 22/09/2026
+
+- **🚨 "Nao consegui salvar (codigo 409)" pode deixar lancamento DUPLICADO, nao so falhar.**
+  O `salvar()` busca o SHA atual antes de gravar (correcao de 27/07), mas quando duas
+  tentativas de `PUT` chegam quase juntas (ex: reclique da propria Bruna apos o erro
+  aparecer, achando que nao tinha ido), a PRIMEIRA pode ter sucesso e criar o registro
+  mesmo assim — so a segunda (ou terceira) que falha com 409 e mostra o erro na tela. O
+  usuario ve "nao consegui salvar" mas o lancamento **ja esta** no `lancamentos.json`.
+  Caso real (22/09/2026): "Material p/ matar rato" R$183,09 foi gravado **3 vezes**
+  (ids `17dd92e4`/`ca321545`/`596f249f`, 18:36:06 a 18:36:15) — corrigido apagando as 2
+  copias extras via `gh api PUT` direto no repo `financeiro-vinicius`.
+  **Regra: ao ver "codigo 409" nesta tela, NAO reclicar Lancar — primeiro conferir na aba
+  Historico se o lancamento ja apareceu.** Falta ainda uma correcao no codigo (`salvar()`
+  ou o form de Lancar) para checar duplicata por conteudo+timestamp antes de criar
+  registro novo — nao feita nesta sessao, so o dado corrigido.
+- Atalho "Financeiro Bruna & Vinicius" na Area de Trabalho aponta pro app local
+  (`rodar_dashboard.bat`, porta 8503), nao pro Streamlit Cloud — se aparecer "nao esta
+  rodando", confirmar com `Get-NetTCPConnection -LocalPort 8503` antes de subir de novo
+  (`cmd /c start` nao funciona em ambiente sandbox do Claude Code; `Start-Process` do
+  PowerShell funciona).
+
 ⏳ **Comando de fechamento de sessao** (mesmo texto padrao dos outros projetos):
 descreva o que foi feito, regras descobertas, dificuldades — depois salve neste CLAUDE.md.

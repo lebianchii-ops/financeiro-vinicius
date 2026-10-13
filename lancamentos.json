@@ -1,5 +1,27 @@
 [
   {
+    "id": "49d83ed4",
+    "data": "2026-10-04",
+    "tipo": "Compra Mercadoria",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Limpeza",
+    "fornecedor": "Armarinhos Fernando",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 115.45,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 57.73,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 115.45,
+    "categoria": "💼 Empresarial",
+    "obs": "Alcool\nRepelente \nCola \nPano",
+    "criado_em": "2026-10-13T07:38:35.943400"
+  },
+  {
     "id": "88575e84",
     "data": "2026-09-28",
     "tipo": "Compra Mercadoria",

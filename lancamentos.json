@@ -1,5 +1,27 @@
 [
   {
+    "id": "b027095a",
+    "data": "2026-10-08",
+    "tipo": "Compra Mercadoria",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Limpeza",
+    "fornecedor": "Sonda",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 131.65,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 65.83,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 131.65,
+    "categoria": "💼 Empresarial",
+    "obs": "Detergente \nDesentupidor \nSaco Plástico\nPapel Higiênico\nEsponja e outros....",
+    "criado_em": "2026-10-13T07:40:37.064187"
+  },
+  {
     "id": "49d83ed4",
     "data": "2026-10-04",
     "tipo": "Compra Mercadoria",

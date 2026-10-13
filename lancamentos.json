@@ -1,5 +1,27 @@
 [
   {
+    "id": "88575e84",
+    "data": "2026-09-28",
+    "tipo": "Compra Mercadoria",
+    "status": "Pendente",
+    "quem_arcou": "Bruna",
+    "descricao": "Fitas Adesivas + Papelaria",
+    "fornecedor": "HCQ",
+    "referencia": "",
+    "comprovante": "",
+    "comprovante_b64": "",
+    "valor_total": 119.4,
+    "divisao": "Meio a Meio",
+    "pct_bruna": 50.0,
+    "valor_liquido": 59.7,
+    "sku": "",
+    "qtd": 1,
+    "valor_unit": 119.4,
+    "categoria": "💼 Empresarial",
+    "obs": "-MARCA TEXTO \n-CALCULADORA \n-POST-IT",
+    "criado_em": "2026-10-13T07:36:29.297782"
+  },
+  {
     "id": "2fa3bbf7",
     "data": "2026-09-22",
     "tipo": "Gasto Empresarial",
